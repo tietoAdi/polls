@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Score Poll</title>
+<style>
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #c2a8ff, #f3d1ff);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    .poll-container {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        width: 350px;
+        animation: fadeIn 0.8s ease-in-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .poll-container h3 {
+        margin-bottom: 15px;
+        font-size: 20px;
+        color: #333;
+        text-align: center;
+    }
+    .option {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        padding: 10px;
+        border-radius: 4px;
+        background: #fafafa;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    .option:hover {
+        background: #eaeaea;
+        transform: scale(1.02);
+    }
+    .option input[type="radio"] {
+        margin-right: 10px;
+    }
+    .vote-btn {
+        width: 100%;
+        padding: 12px;
+        background: #000;
+        color: #fff;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+        border-radius: 4px;
+        margin-top: 10px;
+        transition: background 0.3s ease;
+    }
+    .vote-btn:hover {
+        background: #333;
+    }
+    .result {
+        margin-top: 15px;
+        font-weight: bold;
+        color: #444;
+        text-align: center;
+    }
+    .set-question {
+        margin-bottom: 15px;
+        display: flex;
+        gap: 10px;
+    }
+    .set-question input {
+        flex: 1;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    .set-question button {
+        padding: 8px 12px;
+        background: #6200ea;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+    .set-question button:hover {
+        background: #4b00b5;
+    }
+</style>
+</head>
+<body>
+<div class="poll-container">
+    <div class="set-question">
+        <input type="text" id="questionInput" placeholder="Enter question">
+        <button onclick="setQuestion()">Set</button>
+    </div>
+    <h3 id="pollQuestion">score me</h3>
+    <form id="pollForm">
+        <div class="option"><input type="radio" name="score" value="1"> 1</div>
+        <div class="option"><input type="radio" name="score" value="2"> 2</div>
+        <div class="option"><input type="radio" name="score" value="3"> 3</div>
+        <div class="option"><input type="radio" name="score" value="4"> 4</div>
+        <div class="option"><input type="radio" name="score" value="5"> 5</div>
+        <button type="button" class="vote-btn" onclick="submitVote()">Vote</button>
+    </form>
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+const POLL_KEY = "pollVote";
+const QUESTION_KEY = "pollQuestion";
+
+// Load question if previously set
+document.getElementById('pollQuestion').textContent = localStorage.getItem(QUESTION_KEY) || "score me";
+
+// Check if user already voted
+if(localStorage.getItem(POLL_KEY)) {
+    document.getElementById('result').textContent = `You already voted: ${localStorage.getItem(POLL_KEY)}`;
+    document.querySelector('.vote-btn').disabled = true;
+}
+
+// Set question
+function setQuestion() {
+    const question = document.getElementById('questionInput').value.trim();
+    if(question) {
+        localStorage.setItem(QUESTION_KEY, question);
+        document.getElementById('pollQuestion').textContent = question;
+        document.getElementById('questionInput').value = "";
+    }
+}
+
+// Submit vote
+function submitVote() {
+    if(localStorage.getItem(POLL_KEY)) {
+        document.getElementById('result').textContent = `You already voted: ${localStorage.getItem(POLL_KEY)}`;
+        return;
+    }
+    const selected = document.querySelector('input[name="score"]:checked');
+    const resultDiv = document.getElementById('result');
+    if (selected) {
+        localStorage.setItem(POLL_KEY, selected.value);
+        resultDiv.textContent = `You voted for: ${selected.value}`;
+        document.querySelector('.vote-btn').disabled = true;
+    } else {
+        resultDiv.textContent = 'Please select an option before voting.';
+    }
+}
+</script>
+</body>
+</html>
